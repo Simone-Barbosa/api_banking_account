@@ -22,6 +22,8 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
+    AccountTransactions transaction = new AccountTransactions();
+
     @GetMapping("/all")
     public List<AccountEntity> getAllAccounts(){
         return accountService.getAllAccounts();
@@ -47,28 +49,22 @@ public class AccountController {
         InfoAccount destination = params.getDestination_account();
         BigDecimal deposit_value = params.getDeposit_value();
 
-        System.out.println("param destination = " + destination);
-        System.out.println("param destination.name = " + destination.getName());
-
-//        AccountTransactions deposit = new AccountTransactions(accountService);
-//        return deposit.depositValue(destination, deposit_value);
-
         Optional<AccountEntity> account = accountService.getAccountByNameAndNumber(destination.getName(),
                 destination.getNumber());
 
         if (account.isPresent()) {
             AccountEntity accountUpdated = account.get();
             BigDecimal balance = accountUpdated.getBalance();
-            BigDecimal newBalance = balance.add(deposit_value);
 
+            BigDecimal newBalance = transaction.addValue(balance, deposit_value);
             accountService.updateBalance(accountUpdated, newBalance);
+
             return ResponseEntity.ok(account.get());
         } else {
             return ResponseEntity.notFound().build();
         }
 
     }
-
 
     @PutMapping("/transfer")
     public ResponseEntity<AccountEntity> transferBetweenAccounts(@RequestBody TransferRequest params) {
@@ -80,27 +76,26 @@ public class AccountController {
 
             Optional<AccountEntity> originAccount = accountService.getAccountByNameAndNumber(origin.getName(),
                     origin.getNumber());
+
             Optional<AccountEntity> destinationAccount = accountService.getAccountByNameAndNumber(destination.getName(),
                     destination.getNumber());
 
-
             if (originAccount.isPresent() && destinationAccount.isPresent()) {
                 AccountEntity originAccountUpdated = originAccount.get();
+                AccountEntity destinationAccountUpdated = destinationAccount.get();
+
                 BigDecimal balanceOrigin = originAccountUpdated.getBalance();
+                BigDecimal balanceDestination = destinationAccountUpdated.getBalance();
 
                 if(balanceOrigin.compareTo(transfer_value) >= 0){
 
-                    //atualiza conta de origem
-                    BigDecimal newBalanceOrigin = balanceOrigin.subtract(transfer_value);
+                    BigDecimal newBalanceOrigin = transaction.subtractValue(balanceOrigin, transfer_value);
                     accountService.updateBalance(originAccountUpdated, newBalanceOrigin);
 
-                    // atualiza conta de destino
-                    AccountEntity destinationAccountUpdated = destinationAccount.get();
-                    BigDecimal balanceDestination = destinationAccountUpdated.getBalance();
-                    BigDecimal newBalanceDestination = balanceDestination.add(transfer_value);
+                    BigDecimal newBalanceDestination = transaction.addValue(balanceDestination, transfer_value);
                     accountService.updateBalance(destinationAccountUpdated, newBalanceDestination);
 
-                    return ResponseEntity.ok(originAccount.get());
+                    return ResponseEntity.ok(originAccount.get()); // esse get é só pra mostrar o saldo atualizado
 
                 } else{
                     throw new IllegalArgumentException("Insufficient balance to make the transfer");
