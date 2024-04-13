@@ -9,7 +9,7 @@ public class AccountApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(AccountApplication.class, args);
 
-		System.out.println("Hello World!");
+		System.out.println("API Server is online");
 	}
 
 }

@@ -6,12 +6,14 @@ import br.com.bank.account.interfaces.DepositRequest;
 import br.com.bank.account.interfaces.InfoAccount;
 import br.com.bank.account.interfaces.TransferRequest;
 import br.com.bank.account.services.AccountService;
+import br.com.bank.account.services.ExtractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -21,6 +23,8 @@ import java.util.Optional;
 public class AccountController {
     @Autowired
     AccountService accountService;
+    @Autowired
+    ExtractService extractService;
 
     AccountTransactions transaction = new AccountTransactions();
 
@@ -35,13 +39,11 @@ public class AccountController {
         String number = params.get("number");
 
         Optional<AccountEntity> account = accountService.getAccountByNameAndNumber(name, number);
-//        return account.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
         if (account.isPresent()) {
             return ResponseEntity.ok(account.get());
         } else {
             return ResponseEntity.notFound().build();
         }
-
     }
     @PutMapping("/deposit")
     public ResponseEntity<AccountEntity> depositOnAccount(@RequestBody DepositRequest params) {
@@ -63,7 +65,6 @@ public class AccountController {
         } else {
             return ResponseEntity.notFound().build();
         }
-
     }
 
     @PutMapping("/transfer")
@@ -74,10 +75,12 @@ public class AccountController {
             InfoAccount destination = params.getDestination_account();
             BigDecimal transfer_value = params.getTransfer_value();
 
-            Optional<AccountEntity> originAccount = accountService.getAccountByNameAndNumber(origin.getName(),
+            Optional<AccountEntity> originAccount = accountService.getAccountByNameAndNumber(
+                    origin.getName(),
                     origin.getNumber());
 
-            Optional<AccountEntity> destinationAccount = accountService.getAccountByNameAndNumber(destination.getName(),
+            Optional<AccountEntity> destinationAccount = accountService.getAccountByNameAndNumber(
+                    destination.getName(),
                     destination.getNumber());
 
             if (originAccount.isPresent() && destinationAccount.isPresent()) {
@@ -92,10 +95,26 @@ public class AccountController {
                     BigDecimal newBalanceOrigin = transaction.subtractValue(balanceOrigin, transfer_value);
                     accountService.updateBalance(originAccountUpdated, newBalanceOrigin);
 
+                    BigDecimal transfer_value_negative = transfer_value.multiply(BigDecimal.valueOf(-1));
+
+                    extractService.updateExtract(originAccountUpdated.getNumber(),
+                            "debit",
+                            transfer_value_negative,
+                            destinationAccountUpdated.getNumber(),
+                            LocalDateTime.now(),
+                            newBalanceOrigin);
+
                     BigDecimal newBalanceDestination = transaction.addValue(balanceDestination, transfer_value);
                     accountService.updateBalance(destinationAccountUpdated, newBalanceDestination);
 
-                    return ResponseEntity.ok(originAccount.get()); // esse get é só pra mostrar o saldo atualizado
+                    extractService.updateExtract(destinationAccountUpdated.getNumber(),
+                            "credit",
+                            transfer_value,
+                            originAccountUpdated.getNumber(),
+                            LocalDateTime.now(),
+                            newBalanceDestination);
+
+                    return ResponseEntity.ok(originAccount.get());
 
                 } else{
                     throw new IllegalArgumentException("Insufficient balance to make the transfer");
@@ -106,21 +125,20 @@ public class AccountController {
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().build(); // erro 400
+            return ResponseEntity.badRequest().build();
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // erro 500
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity saveNewAccount(@RequestBody AccountEntity account){
         if(account.getId() == null){
             accountService.saveNewAccount(account);
-            return ResponseEntity.ok().build(); // status 200
+            return ResponseEntity.ok().build();
         }else{
-            return ResponseEntity.internalServerError().build(); // status 500
+            return ResponseEntity.internalServerError().build();
         }
     }
-
 }

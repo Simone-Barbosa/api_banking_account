@@ -31,5 +31,4 @@ public class AccountService {
         account.setBalance(newBalance);
         accountRepository.save(account);
     }
-
 }
