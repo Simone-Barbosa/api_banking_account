@@ -25,7 +25,7 @@ Requisitos Técnicos:
 
     - Utilize o Spring Boot como base para o desenvolvimento do projeto.
 
-- [] 2. Segurança de Endpoints:
+- [ ] 2. Segurança de Endpoints:
 
     - Implemente autenticação e autorização nos endpoints, garantindo que apenas usuários autenticados possam realizar operações bancárias.
 
@@ -41,11 +41,11 @@ Requisitos Técnicos:
 
     - Utilize um banco de dados relacional (por exemplo, MySQL, PostgreSQL) para armazenar as informações das contas.
 
-- [] 6. Testes unitários:
+- [ ] 6. Testes unitários:
 
    - O projeto precisa ter testes unitários.
 
-- [] 7. Docker:
+- [ ] 7. Docker:
 
     - Containerize o aplicativo usando Docker para facilitar a implantação e garantir que todas as dependências estejam encapsuladas.
 
