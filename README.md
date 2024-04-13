@@ -9,15 +9,18 @@ Requisitos Funcionais:
     - [x] Implemente um endpoint para criar uma conta.
 
 - [x] 2. Transferência:
-    [x] Implemente um endpoint que permita a transferência de dinheiro entre duas contas.
-    [x] Considere validar se a conta de origem possui saldo suficiente.
+
+    - [x] Implemente um endpoint que permita a transferência de dinheiro entre duas contas.
+    - [x] Considere validar se a conta de origem possui saldo suficiente.
 
 - [x] 3. Depósito:
+
     - [x] Implemente um endpoint para realizar depósitos em uma conta.
 
 - [x] 4. Consulta de saldo e extrato:
-    [x] Crie uma entidade `Extrato`.
-    [x] Crie um endpoint que permita consultar o saldo e extrato de uma conta.
+
+    - [x] Crie uma entidade `Extrato`.
+    - [x] Crie um endpoint que permita consultar o saldo e extrato de uma conta.
 
 Requisitos Técnicos:
 
