@@ -44,9 +44,7 @@ Requisitos Técnicos:
 
     - Utilize um banco de dados relacional para armazenar as informações das contas.
 
-- [ ] 6. Testes unitários:
-
-   - O projeto precisa ter testes unitários.
+- [ ] 6. Testes unitários
 
 - [x] 7. Documentação:
 
