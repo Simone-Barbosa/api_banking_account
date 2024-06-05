@@ -42,27 +42,13 @@ Requisitos Técnicos:
 
 - [x] 5. Persistência em Banco de Dados:
 
-    - Utilize um banco de dados relacional (por exemplo, MySQL, PostgreSQL) para armazenar as informações das contas.
+    - Utilize um banco de dados relacional para armazenar as informações das contas.
 
 - [ ] 6. Testes unitários:
 
    - O projeto precisa ter testes unitários.
 
-- [ ] 7. Docker:
-
-    - Containerize o aplicativo usando Docker para facilitar a implantação e garantir que todas as dependências estejam encapsuladas.
-
-- [x] 8. Documentação:
+- [x] 7. Documentação:
 
    - [x] Crie um Readme para a aplicação.
    - [x] Crie uma collection com as chamadas da API.
-
-Entrega:
-
-- [x] Disponibilize o código-fonte em um repositório Git de sua escolha.
-- [x] Forneça instruções claras sobre como executar o aplicativo localmente, incluindo a configuração do banco de dados e um script para montar a estrutura do banco de dados.
-
-Observações:
-
-- O foco principal é a qualidade do código e a implementação adequada dos requisitos.
-- Considere a escalabilidade e a manutenibilidade do código.
