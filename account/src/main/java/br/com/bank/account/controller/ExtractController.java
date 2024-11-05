@@ -1,7 +1,7 @@
-package br.com.bank.account.controllers;
+package br.com.bank.account.controller;
 
-import br.com.bank.account.entities.ExtractEntity;
-import br.com.bank.account.services.ExtractService;
+import br.com.bank.account.entity.ExtractEntity;
+import br.com.bank.account.service.ExtractService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

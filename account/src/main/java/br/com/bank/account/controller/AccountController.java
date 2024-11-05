@@ -1,12 +1,12 @@
-package br.com.bank.account.controllers;
+package br.com.bank.account.controller;
 
-import br.com.bank.account.classes.AccountTransactions;
-import br.com.bank.account.entities.AccountEntity;
-import br.com.bank.account.interfaces.DepositRequest;
-import br.com.bank.account.interfaces.InfoAccount;
-import br.com.bank.account.interfaces.TransferRequest;
-import br.com.bank.account.services.AccountService;
-import br.com.bank.account.services.ExtractService;
+import br.com.bank.account.util.AccountTransactions;
+import br.com.bank.account.dto.DepositRequestDTO;
+import br.com.bank.account.dto.InfoAccountDTO;
+import br.com.bank.account.dto.TransferRequestDTO;
+import br.com.bank.account.entity.AccountEntity;
+import br.com.bank.account.service.AccountService;
+import br.com.bank.account.service.ExtractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +46,9 @@ public class AccountController {
         }
     }
     @PutMapping("/deposit")
-    public ResponseEntity<AccountEntity> depositOnAccount(@RequestBody DepositRequest params) {
+    public ResponseEntity<AccountEntity> depositOnAccount(@RequestBody DepositRequestDTO params) {
 
-        InfoAccount destination = params.getDestination_account();
+        InfoAccountDTO destination = params.getDestination_account();
         BigDecimal deposit_value = params.getDeposit_value();
 
         Optional<AccountEntity> account = accountService.getAccountByNameAndNumber(destination.getName(),
@@ -68,11 +68,11 @@ public class AccountController {
     }
 
     @PutMapping("/transfer")
-    public ResponseEntity<AccountEntity> transferBetweenAccounts(@RequestBody TransferRequest params) {
+    public ResponseEntity<AccountEntity> transferBetweenAccounts(@RequestBody TransferRequestDTO params) {
 
         try {
-            InfoAccount origin = params.getOrigin_account();
-            InfoAccount destination = params.getDestination_account();
+            InfoAccountDTO origin = params.getOrigin_account();
+            InfoAccountDTO destination = params.getDestination_account();
             BigDecimal transfer_value = params.getTransfer_value();
 
             Optional<AccountEntity> originAccount = accountService.getAccountByNameAndNumber(

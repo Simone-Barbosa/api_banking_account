@@ -1,4 +1,4 @@
-package br.com.bank.account.classes;
+package br.com.bank.account.util;
 import java.math.BigDecimal;
 
 public class AccountTransactions {

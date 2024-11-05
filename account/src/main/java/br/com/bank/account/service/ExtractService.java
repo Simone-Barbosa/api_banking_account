@@ -1,7 +1,7 @@
-package br.com.bank.account.services;
+package br.com.bank.account.service;
 
-import br.com.bank.account.entities.ExtractEntity;
-import br.com.bank.account.repositories.ExtractRepository;
+import br.com.bank.account.entity.ExtractEntity;
+import br.com.bank.account.repository.ExtractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +35,7 @@ public class ExtractService {
 
     public List<ExtractEntity> getExtractAccount(String account_main) {
         return extractRepository.getExtractByAccountMain(account_main);
+        // adicionar tratamento para quando nao houver nenhum registro de transação
+        // hj retorna um erro no insominia
     }
 }

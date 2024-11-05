@@ -1,4 +1,4 @@
-package br.com.bank.account.entities;
+package br.com.bank.account.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

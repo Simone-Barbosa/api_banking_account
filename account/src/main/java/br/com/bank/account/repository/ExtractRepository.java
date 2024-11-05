@@ -1,6 +1,6 @@
-package br.com.bank.account.repositories;
+package br.com.bank.account.repository;
 
-import br.com.bank.account.entities.ExtractEntity;
+import br.com.bank.account.entity.ExtractEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

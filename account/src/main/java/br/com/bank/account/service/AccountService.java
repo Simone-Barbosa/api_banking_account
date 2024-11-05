@@ -1,7 +1,7 @@
-package br.com.bank.account.services;
+package br.com.bank.account.service;
 
-import br.com.bank.account.entities.AccountEntity;
-import br.com.bank.account.repositories.AccountRepository;
+import br.com.bank.account.entity.AccountEntity;
+import br.com.bank.account.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

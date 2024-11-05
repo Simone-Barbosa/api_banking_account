@@ -1,6 +1,6 @@
-package br.com.bank.account.repositories;
+package br.com.bank.account.repository;
 
-import br.com.bank.account.entities.AccountEntity;
+import br.com.bank.account.entity.AccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
