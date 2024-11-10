@@ -41,6 +41,7 @@
 			<optional>true</optional>
 		</dependency>
 
+<!--		inclui automaticamente o Hibernate Validator e o Jakarta Validation API-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
