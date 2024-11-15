@@ -13,7 +13,7 @@ public class HealthStatusDTO {
     private String applicationVersion;
     private LocalDateTime timestamp;
 
-    // constructor
+    // constructor for jackson JSON deserialization
     public  HealthStatusDTO(){
     }
 
