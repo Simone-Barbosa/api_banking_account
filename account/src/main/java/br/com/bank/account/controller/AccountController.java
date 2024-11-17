@@ -1,12 +1,14 @@
 package br.com.bank.account.controller;
 
+import br.com.bank.account.dto.ExtractRequestDTO;
+import br.com.bank.account.entity.ExtractEntity;
+import br.com.bank.account.service.ExtractService;
 import br.com.bank.account.util.AccountTransactions;
 import br.com.bank.account.dto.DepositRequestDTO;
 import br.com.bank.account.dto.InfoAccountDTO;
 import br.com.bank.account.dto.TransferRequestDTO;
 import br.com.bank.account.entity.AccountEntity;
 import br.com.bank.account.service.AccountService;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,9 @@ public class AccountController {
     @Autowired
     AccountService accountService;
 
+    @Autowired
+    private ExtractService extractService;
+
     AccountTransactions transaction = new AccountTransactions();
 
     @GetMapping("/all")
@@ -30,23 +35,15 @@ public class AccountController {
     @PostMapping("/search")
     public ResponseEntity<AccountEntity> searchAccount(@Valid @RequestBody InfoAccountDTO account_params) {
 
-        try {
-            AccountEntity account = accountService.findAccount(account_params);
-            return ResponseEntity.ok(account);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        AccountEntity account = accountService.findAccount(account_params);
+        return ResponseEntity.ok(account);
     }
 
     @PutMapping("/deposit")
     public ResponseEntity<AccountEntity> depositOnAccount(@Valid @RequestBody DepositRequestDTO deposit_params) {
 
-        try {
-            AccountEntity destinationAccount = accountService.findAccountForDeposit(deposit_params);
-            return ResponseEntity.ok(destinationAccount);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        AccountEntity destinationAccount = accountService.executeDeposit(deposit_params);
+        return ResponseEntity.ok(destinationAccount);
     }
 
     @PutMapping("/transfer")
@@ -65,5 +62,12 @@ public class AccountController {
         } else {
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    @PostMapping("/extract")
+    public ResponseEntity<List<ExtractEntity>> searchExtractByNumber(@Valid @RequestBody ExtractRequestDTO extractRequest) {
+
+        List<ExtractEntity> extract = extractService.getExtractAccount(extractRequest.getAccount_main());
+        return ResponseEntity.ok(extract);
     }
 }

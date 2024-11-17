@@ -8,7 +8,6 @@ import br.com.bank.account.exception.AccountNotFoundException;
 import br.com.bank.account.exception.InsufficientFundsException;
 import br.com.bank.account.repository.AccountRepository;
 import br.com.bank.account.util.AccountTransactions;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,39 +41,35 @@ public class AccountService {
 
     public AccountEntity findAccount(InfoAccountDTO account_params) {
 
-        String name = account_params.getName();
-        String number = account_params.getNumber();
-
-        Optional<AccountEntity> account = getAccountByNameAndNumber(name, number);
-
-        if (account.isPresent()) {
-            return account.get();
-        } else {
-            throw new EntityNotFoundException("Account not found with name: " + name + " and number: " + number);
-        }
-    }
-
-    public AccountEntity findAccountForDeposit(DepositRequestDTO deposit_params) {
-
-        InfoAccountDTO destination_account = deposit_params.getDestination_account();
-        BigDecimal deposit_value = deposit_params.getDeposit_value();
-
         Optional<AccountEntity> account = getAccountByNameAndNumber(
-                destination_account.getName(),
-                destination_account.getNumber()
+                account_params.getName(),
+                account_params.getNumber()
         );
 
         if (account.isPresent()) {
-            AccountEntity accountUpdated = account.get();
-            BigDecimal balance = accountUpdated.getBalance();
-
-            BigDecimal newBalance = transaction.addValue(balance, deposit_value);
-            updateBalance(accountUpdated, newBalance);
-
             return account.get();
         } else {
-            throw new EntityNotFoundException("Account not found: " + destination_account);
+            throw new AccountNotFoundException("Account not found.");
         }
+//        AccountEntity optionCaptureAccount = getAccountByNameAndNumber(
+//                account_params.getName(),
+//                account_params.getNumber()
+//        ).orElseThrow(() -> new AccountNotFoundException("Origin account not found."));
+    }
+
+    public AccountEntity executeDeposit(DepositRequestDTO deposit_params) {
+
+        InfoAccountDTO account = deposit_params.getDestination_account();
+        BigDecimal deposit_value = deposit_params.getDeposit_value();
+
+        AccountEntity destinationAccount = findAccount(account);
+
+        BigDecimal balance = destinationAccount.getBalance();
+        BigDecimal newBalance = transaction.addValue(balance, deposit_value);
+
+        updateBalance(destinationAccount, newBalance);
+
+        return destinationAccount;
 
     }
 
@@ -84,55 +79,42 @@ public class AccountService {
         InfoAccountDTO destination = transference_params.getDestination_account();
         BigDecimal transfer_value = transference_params.getTransfer_value();
 
-        Optional<AccountEntity> originAccount = getAccountByNameAndNumber(
-                origin.getName(),
-                origin.getNumber());
+        AccountEntity originAccount = findAccount(origin);
+        AccountEntity destinationAccount = findAccount(destination);
 
-        Optional<AccountEntity> destinationAccount = getAccountByNameAndNumber(
-                destination.getName(),
-                destination.getNumber());
+        BigDecimal balanceOrigin = originAccount.getBalance();
+        BigDecimal balanceDestination = destinationAccount.getBalance();
 
-        if (originAccount.isPresent() && destinationAccount.isPresent()) {
-            AccountEntity originAccountUpdated = originAccount.get();
-            AccountEntity destinationAccountUpdated = destinationAccount.get();
+        if (balanceOrigin.compareTo(transfer_value) >= 0) {
 
-            BigDecimal balanceOrigin = originAccountUpdated.getBalance();
-            BigDecimal balanceDestination = destinationAccountUpdated.getBalance();
+            BigDecimal newBalanceOrigin = transaction.subtractValue(balanceOrigin, transfer_value);
+            updateBalance(destinationAccount, newBalanceOrigin);
 
-            if (balanceOrigin.compareTo(transfer_value) >= 0) {
+            BigDecimal debit_value = transfer_value.multiply(BigDecimal.valueOf(-1));
 
-                BigDecimal newBalanceOrigin = transaction.subtractValue(balanceOrigin, transfer_value);
-                updateBalance(originAccountUpdated, newBalanceOrigin);
+            extractService.updateExtract(
+                    originAccount.getNumber(),
+                    "debit",
+                    debit_value,
+                    destinationAccount.getNumber(),
+                    LocalDateTime.now(),
+                    newBalanceOrigin);
 
-                BigDecimal transfer_value_negative = transfer_value.multiply(BigDecimal.valueOf(-1));
+            BigDecimal newBalanceDestination = transaction.addValue(balanceDestination, transfer_value);
+            updateBalance(destinationAccount, newBalanceDestination);
 
-                extractService.updateExtract(
-                        originAccountUpdated.getNumber(),
-                        "debit",
-                        transfer_value_negative,
-                        destinationAccountUpdated.getNumber(),
-                        LocalDateTime.now(),
-                        newBalanceOrigin);
+            extractService.updateExtract(
+                    destinationAccount.getNumber(),
+                    "credit",
+                    transfer_value,
+                    originAccount.getNumber(),
+                    LocalDateTime.now(),
+                    newBalanceDestination);
 
-                BigDecimal newBalanceDestination = transaction.addValue(balanceDestination, transfer_value);
-                updateBalance(destinationAccountUpdated, newBalanceDestination);
-
-                extractService.updateExtract(
-                        destinationAccountUpdated.getNumber(),
-                        "credit",
-                        transfer_value,
-                        originAccountUpdated.getNumber(),
-                        LocalDateTime.now(),
-                        newBalanceDestination);
-
-                return originAccount.get();
-
-            } else {
-                throw new InsufficientFundsException("Insufficient balance to make the transfer.");
-            }
+            return originAccount;
 
         } else {
-            throw new AccountNotFoundException("Accounts not found: " + "origin: " + originAccount + "destination: " + destinationAccount);
+            throw new InsufficientFundsException("Insufficient balance to make the transfer.");
         }
 
     }

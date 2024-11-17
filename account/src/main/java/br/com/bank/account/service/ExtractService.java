@@ -1,10 +1,10 @@
 package br.com.bank.account.service;
 
 import br.com.bank.account.entity.ExtractEntity;
+import br.com.bank.account.exception.ExtractNotFoundException;
 import br.com.bank.account.repository.ExtractRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,8 +34,12 @@ public class ExtractService {
     }
 
     public List<ExtractEntity> getExtractAccount(String account_main) {
-        return extractRepository.getExtractByAccountMain(account_main);
-        // adicionar tratamento para quando nao houver nenhum registro de transação
-        // hj retorna um erro no insominia
+
+        List<ExtractEntity> extract = extractRepository.getExtractByAccountMain(account_main);
+
+        if(extract.isEmpty()){
+            throw new ExtractNotFoundException("Extract is empty for account: " + account_main);
+        }
+        return extract;
     }
 }
