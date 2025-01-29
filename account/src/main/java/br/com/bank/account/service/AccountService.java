@@ -49,12 +49,11 @@ public class AccountService {
         if (account.isPresent()) {
             return account.get();
         } else {
-            throw new AccountNotFoundException("Account not found.");
+            throw new AccountNotFoundException(
+                    String.format("Account %s not found", account_params.getNumber())
+            );
         }
-//        AccountEntity optionCaptureAccount = getAccountByNameAndNumber(
-//                account_params.getName(),
-//                account_params.getNumber()
-//        ).orElseThrow(() -> new AccountNotFoundException("Origin account not found."));
+
     }
 
     public AccountEntity executeDeposit(DepositRequestDTO deposit_params) {

@@ -54,7 +54,7 @@ public class AccountController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity createNewAccount(@RequestBody AccountEntity account) {
+    public ResponseEntity createNewAccount(@RequestBody AccountEntity account) { // refatorar logica e exceptions
 
         if (account.getId() == null) {
             accountService.saveNewAccount(account);
