@@ -46,7 +46,14 @@ Requisitos Técnicos:
 
 - [ ] 6. Testes unitários
 
-- [x] 7. Documentação:
+- [ ] 7. Dockerizar o projeto
+
+   - [ ] Api
+   - [ ] Database MySQL
+  
+- [x] 8. Documentação:
 
    - [x] Crie um Readme para a aplicação.
    - [x] Crie uma collection com as chamadas da API.
+   - [ ] Criar documentação com JavaDocs documentar o propósito das classes e métodos.
+   - [ ] Criar documentação dos endpoints com Swagger
