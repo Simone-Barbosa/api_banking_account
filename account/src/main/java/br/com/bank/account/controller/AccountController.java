@@ -1,12 +1,9 @@
 package br.com.bank.account.controller;
 
-import br.com.bank.account.dto.ExtractRequestDTO;
+import br.com.bank.account.dto.*;
 import br.com.bank.account.entity.ExtractEntity;
 import br.com.bank.account.service.ExtractService;
 import br.com.bank.account.util.AccountTransactions;
-import br.com.bank.account.dto.DepositRequestDTO;
-import br.com.bank.account.dto.InfoAccountDTO;
-import br.com.bank.account.dto.TransferRequestDTO;
 import br.com.bank.account.entity.AccountEntity;
 import br.com.bank.account.service.AccountService;
 import jakarta.validation.Valid;
@@ -33,39 +30,41 @@ public class AccountController {
     }
 
     @PostMapping("/search")
-    public ResponseEntity<AccountEntity> searchAccount(@Valid @RequestBody InfoAccountDTO account_params) {
+    public ResponseEntity<AccountEntity> searchAccount(
+            @Valid @RequestBody InfoAccountDTO account_params) {
 
         AccountEntity account = accountService.findAccount(account_params);
         return ResponseEntity.ok(account);
     }
 
     @PutMapping("/deposit")
-    public ResponseEntity<AccountEntity> depositOnAccount(@Valid @RequestBody DepositRequestDTO deposit_params) {
+    public ResponseEntity<AccountEntity> depositOnAccount(
+            @Valid @RequestBody DepositRequestDTO deposit_params) {
 
         AccountEntity destinationAccount = accountService.executeDeposit(deposit_params);
         return ResponseEntity.ok(destinationAccount);
     }
 
     @PutMapping("/transfer")
-    public ResponseEntity<AccountEntity> transferBetweenAccounts(@Valid @RequestBody TransferRequestDTO transference_params) {
+    public ResponseEntity<AccountEntity> transferBetweenAccounts(
+            @Valid @RequestBody TransferRequestDTO transference_params) {
 
         AccountEntity originAccount = accountService.transferenceBetweenAccounts(transference_params);
         return ResponseEntity.ok(originAccount);
     }
 
     @PostMapping("/create")
-    public ResponseEntity createNewAccount(@RequestBody AccountEntity account) { // refatorar logica e exceptions
+    public ResponseEntity<AccountEntity> createNewAccount(
+            @Valid @RequestBody CreateAccountRequestDTO account) {
 
-        if (account.getId() == null) {
-            accountService.saveNewAccount(account);
-            return ResponseEntity.ok().build();
-        } else {
-            return ResponseEntity.internalServerError().build();
-        }
+        AccountEntity accountCreated = accountService.saveNewAccount(account);
+        return ResponseEntity.ok(accountCreated);
+
     }
 
     @PostMapping("/extract")
-    public ResponseEntity<List<ExtractEntity>> searchExtractByNumber(@Valid @RequestBody ExtractRequestDTO extractRequest) {
+    public ResponseEntity<List<ExtractEntity>> searchExtractByNumber(
+            @Valid @RequestBody ExtractRequestDTO extractRequest) {
 
         List<ExtractEntity> extract = extractService.getExtractAccount(extractRequest.getAccount_main());
         return ResponseEntity.ok(extract);

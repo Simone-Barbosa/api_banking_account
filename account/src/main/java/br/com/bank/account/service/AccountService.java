@@ -1,11 +1,11 @@
 package br.com.bank.account.service;
 
+import br.com.bank.account.dto.CreateAccountRequestDTO;
 import br.com.bank.account.dto.DepositRequestDTO;
 import br.com.bank.account.dto.InfoAccountDTO;
 import br.com.bank.account.dto.TransferRequestDTO;
 import br.com.bank.account.entity.AccountEntity;
-import br.com.bank.account.exception.AccountNotFoundException;
-import br.com.bank.account.exception.InsufficientFundsException;
+import br.com.bank.account.exception.*;
 import br.com.bank.account.repository.AccountRepository;
 import br.com.bank.account.util.AccountTransactions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +31,48 @@ public class AccountService {
         return accountRepository.findAll();
     }
 
-    public void saveNewAccount(AccountEntity account) {
-        accountRepository.save(account);
+    public AccountEntity saveNewAccount(CreateAccountRequestDTO account) {
+
+        if (account.getId() == null) {
+            // verificar se conta existe
+
+            // evoluir essa validação para criar conta com nome e cpf da pessoa,
+            // numero da conta deve ser gerado automaticamente, sendo unico no banco de dados
+
+            Optional<AccountEntity> accountAlreadyExist = getAccountByNumber(account.getNumber());
+
+            if (accountAlreadyExist.isPresent()) {
+                throw new AccountException("Account already exist");
+            }
+
+            // numero nao existe, cria a conta nova
+
+            AccountEntity createAccount = new AccountEntity();
+
+            createAccount.setName(account.getName());
+            createAccount.setNumber(account.getNumber());
+            createAccount.setBalance(BigDecimal.valueOf(0.00));
+
+            return accountRepository.save(createAccount);
+
+        } else {
+            throw new CreateAccountException("Id account must be null");
+        }
+
+    }
+
+    private void verifyNumberAccount(String number) {
+
     }
 
     public Optional<AccountEntity> getAccountByNameAndNumber(String name, String number) {
         return accountRepository.findByNameAndNumber(name, number);
     }
+
+    public Optional<AccountEntity> getAccountByNumber(String number) {
+        return accountRepository.findByNumber(number);
+    }
+
 
     public AccountEntity findAccount(InfoAccountDTO account_params) {
 
