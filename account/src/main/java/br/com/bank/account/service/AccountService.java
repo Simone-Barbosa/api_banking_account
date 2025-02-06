@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 public class AccountService {
@@ -39,9 +40,9 @@ public class AccountService {
             // evoluir essa validação para criar conta com nome e cpf da pessoa,
             // numero da conta deve ser gerado automaticamente, sendo unico no banco de dados
 
-            Optional<AccountEntity> accountAlreadyExist = getAccountByNumber(account.getNumber());
+            Optional<AccountEntity> userAlreadyExist = getAccountByCPF(account.getCpf());
 
-            if (accountAlreadyExist.isPresent()) {
+            if (userAlreadyExist.isPresent()) {
                 throw new AccountException("Account already exist");
             }
 
@@ -50,7 +51,8 @@ public class AccountService {
             AccountEntity createAccount = new AccountEntity();
 
             createAccount.setName(account.getName());
-            createAccount.setNumber(account.getNumber());
+            createAccount.setCpf(account.getCpf());
+            createAccount.setNumber(generateUniqueAccountNumber());
             createAccount.setBalance(BigDecimal.valueOf(0.00));
 
             return accountRepository.save(createAccount);
@@ -61,16 +63,23 @@ public class AccountService {
 
     }
 
-    private void verifyNumberAccount(String number) {
+    private String generateUniqueAccountNumber() {
+        String accountNumber;
+        Random random = new Random();
+        do {
+            accountNumber = String.format("%08d", random.nextInt(100000000)); // Gera um número de 8 dígitos
+        } while (accountRepository.existsByNumber(accountNumber)); // Verifica se já existe no banco
 
+        return accountNumber;
     }
+
 
     public Optional<AccountEntity> getAccountByNameAndNumber(String name, String number) {
         return accountRepository.findByNameAndNumber(name, number);
     }
 
-    public Optional<AccountEntity> getAccountByNumber(String number) {
-        return accountRepository.findByNumber(number);
+    public Optional<AccountEntity> getAccountByCPF(String cpf) {
+        return accountRepository.findByCpf(cpf);
     }
 
 

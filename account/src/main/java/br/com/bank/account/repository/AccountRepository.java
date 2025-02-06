@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<AccountEntity,Long> {
     Optional<AccountEntity> findByNameAndNumber(String name, String number);
-
-    Optional<AccountEntity> findByNumber(String number);
+    Optional<AccountEntity> findByCpf(String cpf);
+    boolean existsByNumber(String number);
 
 }

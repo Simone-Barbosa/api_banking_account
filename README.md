@@ -5,8 +5,14 @@ Abaixo estão marcadas os requisitos completados no projeto até a presente data
 Requisitos Funcionais:
 
 - [x] 1. Cadastro de Contas:
-    - [x] Crie uma entidade `Conta` com campos como número da conta, nome do titular e saldo.
-    - [x] Implemente um endpoint para criar uma conta.
+    - Crie uma entidade `Conta` com campos:
+      -[x] número da conta 
+        - [ ] Atualizar e padronizar formato
+      -[x] nome do titular
+      -[x] numero do documento do titular
+      -[x] saldo.
+  
+      -[x] Implemente um endpoint para criar uma conta.
 
 - [x] 2. Transferência:
 

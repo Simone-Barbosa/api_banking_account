@@ -19,6 +19,9 @@ public class AccountEntity {
     @Column(name = "owner_account", nullable = false)
     private String name;
 
+    @Column(name = "owner_cpf_account", nullable = false)
+    private String cpf;
+
     @Column(name = "number_account", nullable = false)
     private String number;
 

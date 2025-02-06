@@ -13,6 +13,8 @@ public class CreateAccountRequestDTO {
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
-    @NotBlank(message = "Number cannot be blank")
+    @NotBlank(message = "CPF cannot be blank")
+    private String cpf;
+
     private String number;
 }

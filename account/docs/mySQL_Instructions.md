@@ -49,3 +49,26 @@ PRIMARY KEY (`id_transaction`),
 INDEX `idx_account_main` (`account_main`),
 INDEX `idx_date_transaction` (`date_transaction`)
 );
+
+
+### Update na tabela account:
+
+ALTER TABLE `bank_account`.`account` ADD COLUMN owner_cpf_account VARCHAR(11) NOT NULL;
+
+SET SQL_SAFE_UPDATES = 0; // desativa safe o update
+
+// atualiza com valores ficticios o campo de cpf:
+
+UPDATE `bank_account`.`account`
+SET owner_cpf_account = CONCAT(LPAD(id_account, 11, '0'))
+WHERE id_account IS NOT NULL;
+
+SET SQL_SAFE_UPDATES = 1; // ativa o safe update
+
+ALTER TABLE `bank_account`.`account` ADD CONSTRAINT unique_cpf UNIQUE (owner_cpf_account); // faz coluna cpf aceitar somentes valores unicos
+
+//  substituir os valores temporários por CPFs reais:
+
+UPDATE `bank_account`.`account`
+SET owner_cpf_account = '12345678900'
+WHERE id_account = 1;
